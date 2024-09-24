@@ -1,3 +1,70 @@
+###################### Client server ##########################
+server.py
+import socket
+
+def start_server():
+    # Create a socket object
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    # Define the IP address and port for the server to listen on
+    host = 'localhost'
+    port = 12345
+
+    # Bind the server to the address and port
+    server_socket.bind((host, port))
+
+    # Start listening for incoming connections (up to 5 connections can be queued)
+    server_socket.listen(5)
+    print(f"Server started, listening on {host}:{port}")
+
+    while True:
+        # Accept a client connection
+        client_socket, addr = server_socket.accept()
+        print(f"Connection established with {addr}")
+
+        # Receive a message from the client (up to 1024 bytes)
+        message = client_socket.recv(1024).decode('utf-8')
+        print(f"Received message from client: {message}")
+
+        # Send a response back to the client
+        response = "Hello Client, message received!"
+        client_socket.send(response.encode('utf-8'))
+
+        # Close the connection with the client
+        client_socket.close()
+
+if __name__ == "__main__":
+    start_server()
+
+client.py
+import socket
+
+def start_client():
+    # Create a socket object
+    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    # Define the server address and port
+    host = 'localhost'
+    port = 12345
+
+    # Connect to the server
+    client_socket.connect((host, port))
+
+    # Send a message to the server
+    message = "Hello Server!"
+    client_socket.send(message.encode('utf-8'))
+
+    # Receive a response from the server
+    response = client_socket.recv(1024).decode('utf-8')
+    print(f"Received from server: {response}")
+
+    # Close the connection
+    client_socket.close()
+
+if __name__ == "__main__":
+    start_client()
+
+
 ################################ SHA DIgest#############################
 Command to Generate and Extract Keys
 openssl req -x509 -key myprivate.key -sha256 -days 365 -out test_1.cer

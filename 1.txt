@@ -1,0 +1,154 @@
+################################ SHA DIgest#############################
+Command to Generate and Extract Keys
+openssl req -x509 -key myprivate.key -sha256 -days 365 -out test_1.cer
+openssl x509 -in test_1.cer -pubkey -noout -out key_x509.key
+
+import subprocess
+
+def compute_sha256_digest(file_path):
+    # Define the command
+    command = ["openssl", "dgst", "-sha256", file_path]
+
+    try:
+        # Run the command and capture the output
+        result = subprocess.run(command, capture_output=True, text=True, check=True)
+        
+        # Print the output
+        print("\n\n\n")
+        print(result.stdout.strip().split("= ")[-1])
+        
+    except subprocess.CalledProcessError as e:
+        print("An error occurred:", e.stderr)
+
+# Usage
+file_path = "message.txt"  # Make sure this file exists in your working directory
+compute_sha256_digest(file_path)
+
+################################ RSA ##################
+
+        encrypt.py
+        import subprocess
+
+        # OpenSSL command to encrypt using the public key
+        # openssl pkeyutl -encrypt -in message.txt -pubin -inkey mypublic.key -out encrypt.enc
+        command = [
+            "openssl", "pkeyutl", "-encrypt", "-in", "message.txt", "-pubin", "-inkey", "mypublic.key", "-out", "encrypt.enc"
+        ]
+        
+        try:
+            # Run the OpenSSL command to encrypt the file
+            subprocess.run(command, check=True)
+            print("File encrypted and saved to 'encrypt.enc'.")
+        except subprocess.CalledProcessError as e:
+            print(f"An error occurred during encryption: {e}")
+        
+        decrypt.py
+        import subprocess
+        
+        # OpenSSL command to decrypt using the private key
+        # openssl pkeyutl -decrypt -in encrypt.enc -inkey myprivate.key -out decrypt.txt
+        command = [
+            "openssl", "pkeyutl", "-decrypt", "-in", "encrypt.enc", "-inkey", "myprivate.key", "-out", "decrypt.txt"
+        ]
+        
+        try:
+            # Run the OpenSSL command to decrypt the file
+            subprocess.run(command, check=True)
+            print("File decrypted and saved to 'decrypt.txt'.")
+        except subprocess.CalledProcessError as e:
+            print(f"An error occurred during decryption: {e}")
+        
+        generate keys.py
+        import subprocess
+        # Command to generate a private key with AES-256-CBC encryption
+        # openssl genrsa -aes-256-cbc -out myprivate.key
+        generate_private_key = [
+            "openssl", "genrsa", "-aes-256-cbc", "-out", "myprivate.key"
+        ]
+        
+        # Command to generate a public key from the private key
+        # openssl rsa -in myprivate.key -pubout > mypublic.keys
+        generate_public_key = [
+            "openssl", "rsa", "-in", "myprivate.key", "-pubout", "-out", "mypublic.key"
+        ]
+        
+        try:
+            # Run the command to generate the private key
+            subprocess.run(generate_private_key, check=True)
+            print("Private key saved as 'myprivate.key'.")
+            
+            # Run the command to generate the public key
+            subprocess.run(generate_public_key, check=True)
+            print("Public key saved as 'mypublic.key'.")
+        except subprocess.CalledProcessError as e:
+            print(f"An error occurred during key generation: {e}")
+
+
+################################ DSP SIgnatures ###############################
+
+        sign.py
+        import subprocess
+        # Step 1: Generate a digital signature using the private key
+        command = [
+            "openssl", "dgst", "-sha256", "-sign", "myprivate.key", "-out", "signature.bin", "message.txt"
+        ]
+        
+        try:
+            # Run the OpenSSL command to generate the signature
+            subprocess.run(command, check=True)
+            print("Digital signature generated and saved as 'signature.bin'.")
+        except subprocess.CalledProcessError as e:
+            print(f"An error occurred during signature generation: {e}")
+        
+        verify.py
+        import subprocess
+        # Step 2: Verify the digital signature using the public key
+        command = [
+            "openssl", "dgst", "-sha256", "-verify", "mypublic.key", "-signature", "signature.bin", "message.txt"
+        ]
+        
+        try:
+            # Run the OpenSSL command to verify the signature
+            subprocess.run(command, check=True)
+            print("Signature verification successful.")
+        except subprocess.CalledProcessError as e:
+            print(f"Signature verification failed: {e}")
+
+############################### DSP Symmetric testing ############################
+
+        encrypt.py
+        import subprocess
+        # OpenSSL command to encrypt the file
+        
+        # openssl enc -aes-256-cbc -md sha512 -pbkdf2 -iter 1000 -salt -in message.txt -out encrypt.enc
+        command = [
+            "openssl", "enc", "-aes-256-cbc", "-md", "sha512", "-pbkdf2", "-iter", "1000", "-salt",
+            "-in", "message.txt", "-out", "encrypt_1.enc"
+        ]
+        
+        try:
+            # Run the OpenSSL command
+            subprocess.run(command, check=True)
+            print("File encrypted and saved to 'encrypt.enc'.")
+        except subprocess.CalledProcessError as e:
+            print(f"An error occurred during encryption: {e}")
+        
+        decrypt.py
+        import subprocess
+        # OpenSSL command to decrypt the file
+        
+        # openssl enc -aes-256-cbc -md sha512 -pbkdf2 -iter 1000 -salt -in encrypt.enc -out decrypt.txt -d
+        command = [
+            "openssl", "enc", "-aes-256-cbc", "-md", "sha512", "-pbkdf2", "-iter", "1000", "-d",
+            "-in", "encrypt_1.enc", "-out", "decrypt_1.txt"
+        ]
+        
+        try:
+            # Run the OpenSSL command
+            subprocess.run(command, check=True)
+            print("File decrypted and saved to 'decrypt.txt'.")
+        except subprocess.CalledProcessError as e:
+            print(f"An error occurred during decryption: {e}")
+
+    
+
